@@ -1,1 +1,1 @@
-# EAP Project Test Automation
+# EAP Project Test Automation and QA Documentation
