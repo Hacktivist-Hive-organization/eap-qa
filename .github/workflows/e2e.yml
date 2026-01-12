@@ -28,7 +28,7 @@ jobs:
         run: python -m playwright install --with-deps
 
       - name: Run Playwright tests
-        run: pytest pytest --tracing=retain-on-failure
+        run: pytest --tracing=retain-on-failure
 
       - name: Upload Playwright traces
         if: ${{ !cancelled() }}
