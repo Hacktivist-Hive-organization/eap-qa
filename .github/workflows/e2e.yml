@@ -30,7 +30,7 @@ jobs:
         run: python -m playwright install --with-deps
 
       - name: Run Playwright tests
-        run: pytest --tracing=retain-on-failure
+        run: --html=artifacts/pytest-report.html --self-contained-html
 
       - name: Upload Playwright traces
         if: ${{ !cancelled() }}
