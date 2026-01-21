@@ -67,6 +67,9 @@ jobs:
           nohup uvicorn app.main:app \
             --host 127.0.0.1 \
             --port 8000 \
+            > ../backend.log 2>&1 &
+        # capture logs and errors and run server in background
+
 
       - name: Install test dependencies
         run: |
