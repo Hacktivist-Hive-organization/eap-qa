@@ -4,6 +4,7 @@ import pytest
 from playwright.sync_api import sync_playwright
 from e2e_tests.utils import settings
 import uuid
+import os
 
 
 CONFIG_PATH = Path(__file__).resolve().parent.parent / "config.ini"
@@ -36,9 +37,7 @@ def browser(config):
 @pytest.fixture(scope="function")
 def browser_context(config, browser):
     ui_config = config["ui"]
-    print("configs: ",ui_config)
     base_url = ui_config.get("base_url")
-    print("PRINTING: ", base_url)
     ctx = browser.new_context(base_url=base_url)
 
     yield ctx
@@ -69,6 +68,6 @@ def page(browser_context):
 @pytest.fixture(scope="function")
 def api_client(config):
     api_config = config["api"]
-    api_url = api_config.get("api_url")
+    api_url = os.getenv("API_BASE_URL", api_config.get("api_url"))
     with httpx.Client(base_url=api_url) as client:
         yield client
