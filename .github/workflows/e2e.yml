@@ -17,24 +17,27 @@ jobs:
         # Docker Hub image
         image: postgres:17
         env:
-          POSTGRES_USER: user1
-          POSTGRES_PASSWORD: user123
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
           POSTGRES_DB: eap
         ports:
         - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
-          --health-cmd pg_isready
+          --health-cmd="pg_isready -U app -d eap"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
     env:
-      # Database connection for backend
-      DATABASE_URL: postgresql+psycopg://user1:user123@localhost:5432/eap
-
       # Where the backend will run
       API_BASE_URL: http://127.0.0.1:8000
+      DATABASE_TYPE: postgresql
+      DATABASE_HOST: 127.0.0.1
+      DATABASE_PORT: "5432"
+      DATABASE_USER: app
+      DATABASE_PASSWORD: app
+      DATABASE_SCHEMA: eap
 
     steps:
       - name: Checkout repository
