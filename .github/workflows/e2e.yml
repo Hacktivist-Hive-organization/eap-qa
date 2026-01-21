@@ -76,11 +76,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: List structure
+        run: |
+          ls -la
+
       - name: Ensure browsers are installed
         run: python -m playwright install --with-deps
 
-      - name: Run Playwright tests
-        run: pytest --html=artifacts/pytest-report.html --self-contained-html
+      - name: Run e2e tests
+        run: pytest ./e2e_tests --html=artifacts/pytest-report.html --self-contained-html
 
       - name: Upload Playwright traces
         if: ${{ !cancelled() }}
