@@ -1,6 +1,5 @@
 import pytest
 
-
 @pytest.mark.api
 def test_health_check(api_client):
     response = api_client.get("/api/v1/health/")
@@ -10,5 +9,11 @@ def test_health_check(api_client):
     assert body["database"] == "connected"
 
 
-def test_register_new_user():
+@pytest.mark.api
+def test_register_with_new_user():
+    pass
+
+
+@pytest.mark.api
+def test_register_with_existing_user():
     pass
