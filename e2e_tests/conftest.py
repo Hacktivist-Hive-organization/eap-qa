@@ -1,16 +1,19 @@
-import pathlib
-
+from pathlib import Path
+import httpx
 import pytest
 from playwright.sync_api import sync_playwright
 from e2e_tests.utils import settings
 import uuid
+import os
 
-CONFIG_PATH = "config.ini"
-TRACES_DIR_PATH = pathlib.Path.cwd().joinpath("artifacts").joinpath("traces")
+
+CONFIG_PATH = Path(__file__).resolve().parent.parent / "config.ini"
+TRACES_DIR_PATH = Path.cwd().joinpath("artifacts").joinpath("traces")
 
 @pytest.fixture(scope="session")
 def config():
-    return settings.load_config(path=CONFIG_PATH)
+    cfg = settings.load_config(path=CONFIG_PATH)
+    return cfg
 
 
 @pytest.fixture(scope="function")
@@ -61,3 +64,10 @@ def page(browser_context):
     yield page
 
     page.close()
+
+@pytest.fixture(scope="function")
+def api_client(config):
+    api_config = config["api"]
+    api_url = os.getenv("API_BASE_URL", api_config.get("api_url"))
+    with httpx.Client(base_url=api_url) as client:
+        yield client
