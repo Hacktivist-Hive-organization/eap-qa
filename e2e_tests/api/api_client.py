@@ -9,6 +9,9 @@ class ApiClient:
         self.api_url = api_url
         self.client = httpx.Client(base_url=api_url)
 
+    def close(self):
+        self.client.close()
+
     def log_request(self, method, endpoint):
         logger.info("Logging request")
         logger.info(f"Request method: {method}, URL: {self.api_url}{endpoint}")

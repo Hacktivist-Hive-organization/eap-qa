@@ -5,6 +5,8 @@ from e2e_tests.utils import settings
 import uuid
 import os
 from e2e_tests.api.api_client import ApiClient
+from test_data.fixtures.auth_fixtures import make_user
+import logging
 
 CONFIG_PATH = Path(__file__).resolve().parent.parent / "config.ini"
 TRACES_DIR_PATH = Path.cwd().joinpath("artifacts").joinpath("traces")
@@ -69,9 +71,11 @@ def page(browser_context):
 @pytest.fixture(scope="session")
 def api_url(config):
     api_config = config["api"]
-    return  os.getenv("API_BASE_URL", api_config.get("api_url"))
+    return os.getenv("API_BASE_URL", api_config.get("api_url"))
 
 
 @pytest.fixture(scope="session")
 def api_client(api_url):
-    return ApiClient(api_url)
+    client = ApiClient(api_url)
+    yield client
+    client.close()

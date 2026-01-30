@@ -1,0 +1,89 @@
+import pytest
+
+from test_data.fixtures.auth_fixtures import strong_password, invalid_email
+
+REGISTER_URL = "/api/v1/auth/register"
+
+
+@pytest.mark.api
+def test_health_check(api_client):
+    response = api_client.get("/api/v1/health/")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["status"] == "ok"
+    assert body["database"] == "connected"
+
+
+@pytest.mark.api
+def test_register_with_new_user(make_user, api_client):
+    user = make_user()
+    response = api_client.post(REGISTER_URL, body=user)
+    assert response.status_code == 201
+
+    body = response.json()
+    assert "access_token" in body
+    assert isinstance(body["access_token"], str)
+    assert body["token_type"] == "bearer"
+
+    assert body["user"]["email"] == user["email"]
+    assert body["user"]["first_name"] == user["first_name"]
+    assert body["user"]["last_name"] == user["last_name"]
+    assert body["user"]["is_active"] is True
+    assert "id" in body["user"]
+
+
+@pytest.mark.api
+def test_register_with_existing_user(make_user, api_client):
+    user = make_user()
+    response1 = api_client.post(REGISTER_URL, body=user)
+    assert response1.status_code == 201
+
+    response2 = api_client.post(REGISTER_URL, body=user)
+    assert response2.status_code == 409
+    body = response2.json()
+    assert "detail" in body
+    assert body["detail"] == "User already exists"
+
+
+@pytest.mark.api
+def test_register_with_invalid_email(make_user, api_client):
+    user = make_user(email=invalid_email())
+    response = api_client.post(REGISTER_URL, body=user)
+    assert response.status_code == 422
+
+    body = response.json()
+    assert "detail" in body
+    assert body["detail"] == "Invalid email address"
+
+
+@pytest.mark.api
+def test_register_with_weak_password(make_user, api_client):
+    user = make_user(password="Pw!1")
+    response = api_client.post(REGISTER_URL, body=user)
+    assert response.status_code == 422
+    body = response.json()
+    assert "detail" in body
+    assert body["detail"] == "Password is too weak"
+
+
+@pytest.mark.api
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        ({"email": ""}),
+        ({"email": "   "}),
+        ({"password": ""}),
+        ({"password": "   "}),
+        ({"first_name": ""}),
+        ({"first_name": "   "}),
+        ({"last_name": ""}),
+        ({"last_name": "   "}),
+    ],
+)
+def test_fill_all_required_fields(make_user, api_client, overrides):
+    user = make_user(**overrides)
+    response = api_client.post(REGISTER_URL, body=user)
+    assert response.status_code == 422
+    body = response.json()
+    assert "detail" in body
+    assert body["detail"] == "All required fields must be filled"
