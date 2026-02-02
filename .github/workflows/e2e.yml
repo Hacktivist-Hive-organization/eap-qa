@@ -29,17 +29,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    env:
-      # Where the backend will run
-      DATABASE_TYPE: postgresql
-      DATABASE_HOST: postgres
-      DATABASE_PORT: "5432"
-      DATABASE_USER: ${{ secrets.DATABASE_USER }}
-      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-      DATABASE_SCHEMA: ${{ secrets.DATABASE_SCHEMA }}
-      DATABASE_ECHO: False
-      JWT_SECRET_KEY: ${{secrets.JWT_SECRET_KEY}}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -67,6 +56,19 @@ jobs:
           PGPASSWORD="$DATABASE_PASSWORD" psql \
             -h localhost -p 5432 -U "$DATABASE_USER" -d "$DATABASE_NAME" \
             -c "CREATE SCHEMA IF NOT EXISTS $DATABASE_SCHEMA;"
+
+      - name: Create env file
+        working-directory: backend
+        run: |
+          cat <<'EOF' > .env
+  DATABASE_TYPE=postgresql
+  DATABASE_HOST=postgres
+  DATABASE_PORT=5432
+  DATABASE_USER=${{secrets.DATABASE_USER}}
+  DATABASE_PASSWORD=${{secrets.DATABASE_PASSWORD}}
+  DATABASE_NAME=${{secrets.DATABASE_NAME}}
+  JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}
+  EOF
 
       - name: Install backend dependencies
         working-directory: backend
