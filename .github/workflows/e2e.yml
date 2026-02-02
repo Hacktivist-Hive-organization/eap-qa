@@ -52,10 +52,10 @@ jobs:
 
       - name: Create schema
         run: |
-          echo "Creating schema: $DATABASE_SCHEMA in db: $DATABASE_NAME"
-          PGPASSWORD="$DATABASE_PASSWORD" psql \
-            -h localhost -p 5432 -U "$DATABASE_USER" -d "$DATABASE_NAME" \
-            -c "CREATE SCHEMA IF NOT EXISTS $DATABASE_SCHEMA;"
+          echo "Creating schema: ${{secrets.DATABASE_SCHEMA}} in db: ${{secrets.DATABASE_NAME}}"
+          PGPASSWORD="${{secrets.DATABASE_PASSWORD}}" psql \
+            -h localhost -p 5432 -U "${{secrets.DATABASE_USER}}" -d "${{secrets.DATABASE_NAME}}" \
+            -c "CREATE SCHEMA IF NOT EXISTS ${{secrets.DATABASE_SCHEMA}};"
 
       - name: Create env file
         working-directory: backend
