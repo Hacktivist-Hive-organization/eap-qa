@@ -62,7 +62,7 @@ jobs:
         run: |
           cat <<'EOF' > .env
           DATABASE_TYPE=postgresql
-          DATABASE_HOST=postgres
+          DATABASE_HOST=127.0.0.1
           DATABASE_PORT=5432
           DATABASE_USER=${{secrets.DATABASE_USER}}
           DATABASE_PASSWORD=${{secrets.DATABASE_PASSWORD}}
