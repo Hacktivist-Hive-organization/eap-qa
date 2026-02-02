@@ -4,6 +4,8 @@ import uuid
 
 logger = logging.getLogger("fixture_logger")
 
+# returns a new featureless instance
+AUTO = object()
 
 def unique_email() -> str:
     return f"e2e_{uuid.uuid4().hex}@example.com"
@@ -32,20 +34,19 @@ def make_user():
     users = []
 
     def _make_user(
-            email: str | None = None,
-            password: str | None = None,
-            first_name: str = "Test",
-            last_name: str = "User"
+            email= AUTO,
+            password= AUTO,
+            first_name= AUTO,
+            last_name= AUTO,
     ):
         user = {
-            "email": unique_email() if email is None else email,
-            "password": strong_password() if password is None else password,
-            "first_name": first_name,
-            "last_name": last_name
+            "email": unique_email() if email is AUTO else email,
+            "password": strong_password() if password is AUTO else password,
+            "first_name": "Test" if first_name is AUTO else first_name,
+            "last_name": "User" if last_name is AUTO else last_name,
         }
         users.append(user)
         logger.info("Created user email=%r", user["email"])
         return user
 
     yield _make_user
-   #logger.info(f"Cleanup: {len(users)} users")

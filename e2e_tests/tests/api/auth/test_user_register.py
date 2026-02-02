@@ -1,6 +1,6 @@
 import pytest
 
-from test_data.fixtures.auth_fixtures import strong_password, invalid_email
+from test_data.fixtures.auth_fixtures import weak_passwords, invalid_email
 
 REGISTER_URL = "/api/v1/auth/register"
 
@@ -23,6 +23,7 @@ def test_register_with_new_user(make_user, api_client):
     body = response.json()
     assert "access_token" in body
     assert isinstance(body["access_token"], str)
+    assert body["access_token"].count(".") == 2
     assert body["token_type"] == "bearer"
 
     assert body["user"]["email"] == user["email"]
@@ -57,8 +58,9 @@ def test_register_with_invalid_email(make_user, api_client):
 
 
 @pytest.mark.api
-def test_register_with_weak_password(make_user, api_client):
-    user = make_user(password="Pw!1")
+@pytest.mark.parametrize("pw", list(weak_passwords().values()))
+def test_register_with_weak_password(make_user, api_client, pw):
+    user = make_user(password=pw)
     response = api_client.post(REGISTER_URL, body=user)
     assert response.status_code == 422
     body = response.json()
@@ -80,10 +82,21 @@ def test_register_with_weak_password(make_user, api_client):
         ({"last_name": "   "}),
     ],
 )
-def test_fill_all_required_fields(make_user, api_client, overrides):
+def test_register_with_blank_or_null_fields(make_user, api_client, overrides):
     user = make_user(**overrides)
     response = api_client.post(REGISTER_URL, body=user)
     assert response.status_code == 422
     body = response.json()
     assert "detail" in body
     assert body["detail"] == "All required fields must be filled"
+
+
+@pytest.mark.api
+@pytest.mark.parametrize("missing_field", ["email", "password", "first_name", "last_name"])
+def test_register_missing_required_fields(make_user, api_client, missing_field):
+    user = make_user()
+    user.pop(missing_field)
+    response = api_client.post(REGISTER_URL, body=user)
+    assert response.status_code == 422
+    body = response.json()
+    assert "detail" in body

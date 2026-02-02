@@ -7,7 +7,7 @@ logger = logging.getLogger("api_logger")
 class ApiClient:
     def __init__(self, api_url):
         self.api_url = api_url
-        self.client = httpx.Client(base_url=api_url)
+        self.client = httpx.Client(base_url=api_url, timeout=10)
 
     def close(self):
         self.client.close()
@@ -15,6 +15,7 @@ class ApiClient:
     def log_request(self, method, endpoint):
         logger.info("Logging request")
         logger.info(f"Request method: {method}, URL: {self.api_url}{endpoint}")
+
 
     def log_response(self, response: httpx.Response):
         logger.info("Logging response")
