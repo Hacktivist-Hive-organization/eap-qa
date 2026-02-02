@@ -31,14 +31,15 @@ jobs:
 
     env:
       # Where the backend will run
-      API_BASE_URL: http://127.0.0.1:8000
       DATABASE_TYPE: postgresql
-      DATABASE_HOST: 127.0.0.1
+      DATABASE_HOST: postgres
       DATABASE_PORT: "5432"
-      DATABASE_USER: app
-      DATABASE_PASSWORD: app
-      DATABASE_SCHEMA: eap
-
+      DATABASE_USER: ${{ secrets.DATABASE_USER }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+      DATABASE_SCHEMA: ${{ secrets.DATABASE_SCHEMA }}
+      DATABASE_ECHO: False
+      JWT_SECRET_KEY: ${{secrets.JWT_SECRET_KEY}}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
