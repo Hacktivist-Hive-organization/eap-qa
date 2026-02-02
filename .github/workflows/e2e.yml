@@ -17,8 +17,8 @@ jobs:
         # Docker Hub image
         image: postgres:17
         env:
-          POSTGRES_USER: app
-          POSTGRES_PASSWORD: app
+          POSTGRES_USER: ${{ secrets.DATABASE_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           POSTGRES_DB: eap
         ports:
         - 5432:5432
