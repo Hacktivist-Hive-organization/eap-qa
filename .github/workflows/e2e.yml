@@ -99,6 +99,13 @@ jobs:
       - name: Run e2e tests
         run: pytest ./e2e_tests --html=artifacts/pytest-report.html --self-contained-html
 
+      - name: Show backend log
+        if: always()
+        run: |
+          echo "---- backend.log ----"
+          cat backend.log || true
+          echo "---------------------"
+
       - name: Upload Playwright traces
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
