@@ -56,6 +56,18 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install postgres client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Create schema
+        run: |
+          echo "Creating schema: $DATABASE_SCHEMA in db: $DATABASE_NAME"
+          PG_PASSWORD="$DATABASE_PASSWORD" psql \
+            -h localhost -p 5432 -U "$DATABASE_USER" -d "$DATABASE_NAME" \
+            -c "CREATE SCHEMA IF NOT EXISTS $DATABASE_SCHEMA;"
+
       - name: Install backend dependencies
         working-directory: backend
         run: |
