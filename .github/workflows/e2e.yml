@@ -61,14 +61,14 @@ jobs:
         working-directory: backend
         run: |
           cat <<'EOF' > .env
-  DATABASE_TYPE=postgresql
-  DATABASE_HOST=postgres
-  DATABASE_PORT=5432
-  DATABASE_USER=${{secrets.DATABASE_USER}}
-  DATABASE_PASSWORD=${{secrets.DATABASE_PASSWORD}}
-  DATABASE_NAME=${{secrets.DATABASE_NAME}}
-  JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}
-  EOF
+          DATABASE_TYPE=postgresql
+          DATABASE_HOST=postgres
+          DATABASE_PORT=5432
+          DATABASE_USER=${{secrets.DATABASE_USER}}
+          DATABASE_PASSWORD=${{secrets.DATABASE_PASSWORD}}
+          DATABASE_NAME=${{secrets.DATABASE_NAME}}
+          JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}
+          EOF
 
       - name: Install backend dependencies
         working-directory: backend
