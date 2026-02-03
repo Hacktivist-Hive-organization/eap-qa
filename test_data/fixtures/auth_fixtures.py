@@ -1,11 +1,13 @@
 import pytest
 import logging
 import uuid
+from jose import jwt
 
 logger = logging.getLogger("fixture_logger")
 
 # returns a new featureless instance
 AUTO = object()
+
 
 def unique_email() -> str:
     return f"e2e_{uuid.uuid4().hex}@example.com"
@@ -19,7 +21,7 @@ def strong_password() -> str:
     return f"Pw!{uuid.uuid4().hex}"
 
 
-def weak_passwords():
+def weak_passwords() -> dict:
     return {
         "too_short": "Ab!1",
         "only_lower": uuid.uuid4().hex.lower(),
@@ -28,16 +30,28 @@ def weak_passwords():
     }
 
 
+def decode_token(access_token: str) -> dict:
+    decoded_payload = jwt.decode(
+        access_token,
+        key="",
+        options = {
+        "verify_signature": False,
+        "verify_exp": False,
+    },
+    )
+    return decoded_payload
+
+
 @pytest.fixture
 def make_user():
     # to track test data
     users = []
 
     def _make_user(
-            email= AUTO,
-            password= AUTO,
-            first_name= AUTO,
-            last_name= AUTO,
+            email=AUTO,
+            password=AUTO,
+            first_name=AUTO,
+            last_name=AUTO,
     ):
         user = {
             "email": unique_email() if email is AUTO else email,

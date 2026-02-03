@@ -1,6 +1,6 @@
 import pytest
 
-from test_data.fixtures.auth_fixtures import weak_passwords, invalid_email
+from test_data.fixtures.auth_fixtures import weak_passwords, invalid_email, decode_token
 
 REGISTER_URL = "/api/v1/auth/register"
 
@@ -22,8 +22,11 @@ def test_register_with_new_user(make_user, api_client):
 
     body = response.json()
     assert "access_token" in body
+    payload = decode_token(body["access_token"])
+    assert "sub" in payload
+    assert "exp" in payload
+
     assert isinstance(body["access_token"], str)
-    assert body["access_token"].count(".") == 2
     assert body["token_type"] == "bearer"
 
     assert body["user"]["email"] == user["email"]
