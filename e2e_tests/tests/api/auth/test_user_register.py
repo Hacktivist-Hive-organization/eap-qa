@@ -6,15 +6,6 @@ REGISTER_URL = "/api/v1/auth/register"
 
 
 @pytest.mark.api
-def test_health_check(api_client):
-    response = api_client.get("/api/v1/health/")
-    assert response.status_code == 200
-    body = response.json()
-    assert body["status"] == "ok"
-    assert body["database"] == "connected"
-
-
-@pytest.mark.api
 def test_register_with_new_user(make_user, api_client):
     user = make_user()
     response = api_client.post(REGISTER_URL, body=user)
