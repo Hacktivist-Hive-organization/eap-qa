@@ -34,10 +34,10 @@ def decode_token(access_token: str) -> dict:
     decoded_payload = jwt.decode(
         access_token,
         key="",
-        options = {
-        "verify_signature": False,
-        "verify_exp": False,
-    },
+        options={
+            "verify_signature": False,
+            "verify_exp": False,
+        },
     )
     return decoded_payload
 

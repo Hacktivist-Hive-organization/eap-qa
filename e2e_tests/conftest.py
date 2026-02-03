@@ -6,7 +6,6 @@ import uuid
 import os
 from e2e_tests.api.api_client import ApiClient
 from test_data.fixtures.auth_fixtures import make_user
-import logging
 
 CONFIG_PATH = Path(__file__).resolve().parent.parent / "config.ini"
 TRACES_DIR_PATH = Path.cwd().joinpath("artifacts").joinpath("traces")

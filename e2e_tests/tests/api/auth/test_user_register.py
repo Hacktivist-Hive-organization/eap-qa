@@ -1,8 +1,8 @@
 import pytest
-
+from test_data.constants.api_endpoints import AuthEndpoints
 from test_data.fixtures.auth_fixtures import weak_passwords, invalid_email, decode_token
 
-REGISTER_URL = "/api/v1/auth/register"
+REGISTER_URL = AuthEndpoints.REGISTER
 
 
 @pytest.mark.api
