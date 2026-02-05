@@ -17,8 +17,8 @@ jobs:
         # Docker Hub image
         image: postgres:17
         env:
-          POSTGRES_USER: app
-          POSTGRES_PASSWORD: app
+          POSTGRES_USER: ${{ secrets.DATABASE_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           POSTGRES_DB: eap
         ports:
         - 5432:5432
@@ -28,16 +28,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
-    env:
-      # Where the backend will run
-      API_BASE_URL: http://127.0.0.1:8000
-      DATABASE_TYPE: postgresql
-      DATABASE_HOST: 127.0.0.1
-      DATABASE_PORT: "5432"
-      DATABASE_USER: app
-      DATABASE_PASSWORD: app
-      DATABASE_SCHEMA: eap
 
     steps:
       - name: Checkout repository
@@ -55,11 +45,42 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install postgres client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Create schema
+        run: |
+          echo "Creating schema: ${{secrets.DATABASE_SCHEMA}} in db: ${{secrets.DATABASE_NAME}}"
+          PGPASSWORD="${{secrets.DATABASE_PASSWORD}}" psql \
+            -h localhost -p 5432 -U "${{secrets.DATABASE_USER}}" -d "${{secrets.DATABASE_NAME}}" \
+            -c "CREATE SCHEMA IF NOT EXISTS ${{secrets.DATABASE_SCHEMA}};"
+
+      - name: Create env file
+        working-directory: backend
+        run: |
+          cat <<'EOF' > .env
+          DATABASE_TYPE=postgresql
+          DATABASE_HOST=127.0.0.1
+          DATABASE_PORT=5432
+          DATABASE_USER=${{secrets.DATABASE_USER}}
+          DATABASE_PASSWORD=${{secrets.DATABASE_PASSWORD}}
+          DATABASE_NAME=${{secrets.DATABASE_NAME}}
+          JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}
+          DEVELOPMENT_ENVIRONMENT=True
+          EOF
+
       - name: Install backend dependencies
         working-directory: backend
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Run alembic migrations
+        working-directory: backend
+        run: |
+          alembic upgrade head
 
       - name: Start backend server
         working-directory: backend
@@ -85,6 +106,13 @@ jobs:
 
       - name: Run e2e tests
         run: pytest ./e2e_tests --html=artifacts/pytest-report.html --self-contained-html
+
+      - name: Show backend log
+        if: always()
+        run: |
+          echo "---- backend.log ----"
+          cat backend.log || true
+          echo "---------------------"
 
       - name: Upload Playwright traces
         if: ${{ !cancelled() }}
