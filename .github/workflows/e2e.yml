@@ -19,12 +19,12 @@ jobs:
         env:
           POSTGRES_USER: ${{ secrets.DATABASE_USER }}
           POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-          POSTGRES_DB: eap
+          POSTGRES_DB: ${{ secrets.DATABASE_NAME }}
         ports:
-        - 5432:5432
+          - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
-          --health-cmd="pg_isready -U app -d eap"
+          --health-cmd="pg_isready -U ${{ secrets.DATABASE_USER }} -d ${{ secrets.DATABASE_NAME }}"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -41,7 +41,7 @@ jobs:
           path: backend
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -91,6 +91,23 @@ jobs:
             > ../backend.log 2>&1 &
         # capture logs and errors and run server in background
 
+      - name: Checkout frontend repo
+        uses: actions/checkout@v5
+        with:
+          repository: Hacktivist-Hive-organization/eap-frontend
+          ref: dev
+          path: frontend
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache-dependency-path: frontend/package-lock.json
+          cache: 'npm'
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
 
       - name: Install test dependencies
         run: |
@@ -105,7 +122,7 @@ jobs:
         run: python -m playwright install --with-deps
 
       - name: Run e2e tests
-        run: pytest ./e2e_tests --html=artifacts/pytest-report.html --self-contained-html
+        run: pytest -m ui --html=artifacts/pytest-report.html --self-contained-html
 
       - name: Show backend log
         if: always()
@@ -116,7 +133,7 @@ jobs:
 
       - name: Upload Playwright traces
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: artifacts
           path: ${{ github.workspace }}/artifacts
