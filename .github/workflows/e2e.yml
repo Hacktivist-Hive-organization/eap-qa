@@ -111,7 +111,7 @@ jobs:
 
       - name: Start frontend server
         run: |
-          nohup npm run dev -- --host 127.0.0.1 --port 5173 > ../frontend.log 2>&1 &
+          nohup npm run dev -- --host 127.0.0.1 --port 5173 --strictPort > ../frontend.log 2>&1 &
 
       - name: Install test dependencies
         run: |
