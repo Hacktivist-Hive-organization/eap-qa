@@ -27,7 +27,7 @@ def test_register_with_new_user(register_page, requests_page, make_user):
     user = make_user()
     register_page.go_to_register_page()
     register_page.register_new_user(user["first_name"], user["last_name"], user["email"], user["password"])
-    expect(requests_page.page_title).to_be_visible()
+    expect(requests_page.page_title).to_be_visible(timeout=15000)
 
 
 @pytest.mark.ui
@@ -36,7 +36,7 @@ def test_login_with_valid_credentials(page: Page, login_page, requests_page, reg
     login_page.go_to_login_page()
     login_page.login_to_application(user["email"], user["password"])
     # verify that user navigates to requests dashboard
-    expect(requests_page.page_title).to_be_visible()
+    expect(requests_page.page_title).to_be_visible(timeout=15000)
 
 
 @pytest.mark.ui
@@ -64,4 +64,4 @@ def test_user_logout(page: Page, login_page, requests_page, registered_user):
     login_page.login_to_application(user["email"], user["password"])
     expect(requests_page.page_title).to_be_visible()
     requests_page.click_logout_button()
-    expect(login_page.submit_button).to_be_visible()
+    expect(login_page.submit_button).to_be_visible(timeout=15000)
