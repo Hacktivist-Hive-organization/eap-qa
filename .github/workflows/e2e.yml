@@ -111,6 +111,8 @@ jobs:
 
       - name: Start frontend server
         working-directory: frontend
+        env:
+          VITE_API_URL: http://127.0.0.1:8000
         run: |
           nohup npm run dev -- --host 127.0.0.1 --port 5173 --strictPort > ../frontend.log 2>&1 &
 
