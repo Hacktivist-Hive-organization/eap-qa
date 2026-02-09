@@ -1,17 +1,10 @@
 import pytest
-from test_data.constants.api_endpoints import AuthEndpoints
+from test_data.constants.api_endpoints import AuthEndpoints, UserEndpoints
 from test_data.fixtures.auth_fixtures import decode_token
 
 REGISTER_URL = AuthEndpoints.REGISTER
 LOGIN_URL = AuthEndpoints.LOGIN
-
-
-@pytest.fixture
-def registered_user(make_user, api_client) -> dict:
-    user = make_user()
-    response = api_client.post(REGISTER_URL, body=user)
-    assert response.status_code == 201
-    return user
+USERS_ME_URL = UserEndpoints.USERS_ME
 
 
 @pytest.mark.api
@@ -70,11 +63,15 @@ def test_login_with_missing_email_password(api_client, payload):
     assert "detail" in body
 
 
-# @pytest.mark.api
-# def test_unauthorized_user_cannot_access_protected_endpoint():
-#     pass
-#
-#
-# @pytest.mark.api
-# def test_authorized_user_access_protected_endpoint(api_client):
-#     pass
+@pytest.mark.api
+def test_unauthorized_user_cannot_access_protected_endpoint(api_client):
+    response = api_client.get(USERS_ME_URL)
+    assert response.status_code == 401
+    body = response.json()
+    assert "detail" in body
+
+
+@pytest.mark.api
+def test_authorized_user_access_protected_endpoint(api_client, auth_headers):
+    response = api_client.get(USERS_ME_URL, headers=auth_headers)
+    assert response.status_code == 200

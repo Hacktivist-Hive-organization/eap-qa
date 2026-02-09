@@ -5,4 +5,5 @@ class AuthEndpoints:
 
 class UserEndpoints:
     USERS = "/api/v1/users/"
+    USERS_ME = "/api/v1/users/me"
     USER_BY_ID = "/api/v1/users/{id}"
