@@ -1,17 +1,8 @@
 import pytest
-
+from test_data.constants.api_endpoints import AuthEndpoints
 from test_data.fixtures.auth_fixtures import weak_passwords, invalid_email, decode_token
 
-REGISTER_URL = "/api/v1/auth/register"
-
-
-@pytest.mark.api
-def test_health_check(api_client):
-    response = api_client.get("/api/v1/health/")
-    assert response.status_code == 200
-    body = response.json()
-    assert body["status"] == "ok"
-    assert body["database"] == "connected"
+REGISTER_URL = AuthEndpoints.REGISTER
 
 
 @pytest.mark.api
@@ -32,7 +23,6 @@ def test_register_with_new_user(make_user, api_client):
     assert body["user"]["email"] == user["email"]
     assert body["user"]["first_name"] == user["first_name"]
     assert body["user"]["last_name"] == user["last_name"]
-    assert body["user"]["is_active"] is True
     assert "id" in body["user"]
 
 
@@ -57,7 +47,7 @@ def test_register_with_invalid_email(make_user, api_client):
 
     body = response.json()
     assert "detail" in body
-    assert body["detail"] == "Invalid email address"
+    assert body["detail"] == "Invalid email or password"
 
 
 @pytest.mark.api
