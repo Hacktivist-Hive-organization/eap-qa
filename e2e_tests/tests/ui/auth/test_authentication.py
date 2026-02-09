@@ -31,7 +31,7 @@ def test_register_with_new_user(register_page, requests_page, make_user):
 
 
 @pytest.mark.ui
-def test_login_with_valid_credentials(page: Page, login_page, requests_page, registered_user):
+def test_login_with_valid_credentials(login_page, requests_page, registered_user):
     user = registered_user
     login_page.go_to_login_page()
     login_page.login_to_application(user["email"], user["password"])
@@ -41,7 +41,7 @@ def test_login_with_valid_credentials(page: Page, login_page, requests_page, reg
 
 @pytest.mark.ui
 @pytest.mark.parametrize("email,password", [("non@existing.email", "Psw!1234")])
-def test_login_with_non_existing_email(page: Page, login_page, email, password):
+def test_login_with_non_existing_email(login_page, email, password):
     login_page.go_to_login_page()
     login_page.login_to_application(email, password)
     # verify warning
@@ -49,7 +49,7 @@ def test_login_with_non_existing_email(page: Page, login_page, email, password):
 
 
 @pytest.mark.ui
-def test_login_with_wrong_password(page: Page, login_page, registered_user):
+def test_login_with_wrong_password(login_page, registered_user):
     user = registered_user
     login_page.go_to_login_page()
     login_page.login_to_application(user["email"], "Wrong_pas1")
@@ -57,7 +57,7 @@ def test_login_with_wrong_password(page: Page, login_page, registered_user):
 
 
 @pytest.mark.ui
-def test_user_logout(page: Page, login_page, requests_page, registered_user):
+def test_user_logout(login_page, requests_page, registered_user):
     user = registered_user
     login_page.go_to_login_page()
     login_page.login_to_application(user["email"], user["password"])
