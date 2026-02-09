@@ -27,9 +27,9 @@ class ApiClient:
         )
         logger.info(f"Response body: {response.text}")
 
-    def get(self, endpoint, params=None):
+    def get(self, endpoint, params=None, headers=None):
         self.log_request("GET", endpoint)
-        response = self.client.get(endpoint, params=params)
+        response = self.client.get(endpoint, params=params, headers=headers)
         self.log_response(response)
         return response
 
