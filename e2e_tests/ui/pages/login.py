@@ -7,7 +7,7 @@ class LoginPage:
         self.page_title = "Login"
         self.email_button = page.locator("#login-email")
         self.password_button = page.locator("#login-password")
-        self.submit_button = page.get_by_role('button', name='Sign In')
+        self.sign_in_button = page.get_by_role('button', name='Sign In')
         self.login_error_toast = page.locator("[data-sonner-toast][data-type='error'][data-visible='true']")
 
     def go_to_login_page(self):
