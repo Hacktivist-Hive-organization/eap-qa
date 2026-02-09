@@ -58,7 +58,7 @@ def test_login_with_wrong_password(api_client, registered_user):
 )
 def test_login_with_missing_email_password(api_client, payload):
     response = api_client.post(LOGIN_URL, body=payload)
-    assert response.status_code == 400
+    assert response.status_code == 422
     body = response.json()
     assert "detail" in body
 

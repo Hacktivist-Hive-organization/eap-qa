@@ -48,7 +48,7 @@ def test_register_with_invalid_email(make_user, api_client):
 
     body = response.json()
     assert "detail" in body
-    assert body["detail"] == "Invalid email address"
+    assert body["detail"] == "Invalid email or password"
 
 
 @pytest.mark.api
