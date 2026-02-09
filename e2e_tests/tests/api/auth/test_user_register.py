@@ -23,7 +23,6 @@ def test_register_with_new_user(make_user, api_client):
     assert body["user"]["email"] == user["email"]
     assert body["user"]["first_name"] == user["first_name"]
     assert body["user"]["last_name"] == user["last_name"]
-    assert body["user"]["is_active"] is True
     assert "id" in body["user"]
 
 

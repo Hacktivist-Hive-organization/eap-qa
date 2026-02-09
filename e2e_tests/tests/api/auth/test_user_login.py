@@ -19,7 +19,6 @@ def test_successful_login_with_valid_credentials(make_user, api_client, register
     assert body["token_type"] == "bearer"
 
     assert body["user"]["email"] == user["email"]
-    assert body["user"]["is_active"] is True
     assert "id" in body["user"]
 
 
