@@ -20,7 +20,7 @@ class LoginPage:
         self.password_button.fill(value)
 
     def click_submit_button(self):
-        self.submit_button.click()
+        self.sign_in_button.click()
 
     def login_to_application(self, email: str, password: str):
         self.set_email(email)
