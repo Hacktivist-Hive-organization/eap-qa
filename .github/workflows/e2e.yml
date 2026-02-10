@@ -17,11 +17,11 @@ jobs:
         # Docker Hub image
         image: postgres:17
         env:
-          POSTGRES_USER: ${{ secrets.DATABASE_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
           POSTGRES_DB: eap
         ports:
-        - 5432:5432
+          - 5432:5432
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd="pg_isready -U app -d eap"
@@ -41,7 +41,7 @@ jobs:
           path: backend
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -91,6 +91,30 @@ jobs:
             > ../backend.log 2>&1 &
         # capture logs and errors and run server in background
 
+      - name: Checkout frontend repo
+        uses: actions/checkout@v5
+        with:
+          repository: Hacktivist-Hive-organization/eap-frontend
+          ref: dev
+          path: frontend
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache-dependency-path: frontend/package-lock.json
+          cache: 'npm'
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Start frontend server
+        working-directory: frontend
+        env:
+          VITE_API_URL: http://127.0.0.1:8000
+        run: |
+          nohup npm run dev -- --host 127.0.0.1 --port 5173 --strictPort > ../frontend.log 2>&1 &
 
       - name: Install test dependencies
         run: |
@@ -105,7 +129,7 @@ jobs:
         run: python -m playwright install --with-deps
 
       - name: Run e2e tests
-        run: pytest ./e2e_tests --html=artifacts/pytest-report.html --self-contained-html
+        run: pytest ./e2e_tests -m ui --html=artifacts/pytest-report.html --self-contained-html
 
       - name: Show backend log
         if: always()
@@ -114,9 +138,16 @@ jobs:
           cat backend.log || true
           echo "---------------------"
 
+      - name: Show frontend log
+        if: always()
+        run: |
+          echo "---- frontend.log ----"
+          cat frontend.log || true
+          echo "----------------------"
+
       - name: Upload Playwright traces
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: artifacts
           path: ${{ github.workspace }}/artifacts
