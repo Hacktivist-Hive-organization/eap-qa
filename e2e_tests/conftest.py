@@ -6,6 +6,8 @@ import uuid
 import os
 from e2e_tests.api.api_client import ApiClient
 from test_data.fixtures.auth_fixtures import make_user, registered_user, access_token, auth_headers
+from test_data.fixtures.request_fixtures import make_request, create_request, request_payloads, request_types_map, request_types
+
 
 CONFIG_PATH = Path(__file__).resolve().parent.parent / "config.ini"
 TRACES_DIR_PATH = Path.cwd().joinpath("artifacts").joinpath("traces")
@@ -17,7 +19,7 @@ def config():
     return cfg
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def browser(config):
     ui_config = config["ui"]
     browser_name = ui_config.get("browser_name")
@@ -45,7 +47,7 @@ def browser_context(config, browser):
     ctx.close()
 
 
-@pytest.fixture(scope="function", autouse=True)
+@pytest.fixture(scope="function")
 def trace_browser_context(config, browser_context):
     ui_config = config["ui"]
     save_trace = ui_config.getboolean("save_trace")
