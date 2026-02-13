@@ -6,8 +6,8 @@ import uuid
 import os
 from e2e_tests.api.api_client import ApiClient
 from test_data.fixtures.auth_fixtures import make_user, registered_user, access_token, auth_headers
-from test_data.fixtures.request_fixtures import make_request, create_request, request_payloads, request_types_map, request_types
-
+from test_data.fixtures.request_fixtures import make_request, create_request, request_payloads, request_types_map, \
+    request_types
 
 CONFIG_PATH = Path(__file__).resolve().parent.parent / "config.ini"
 TRACES_DIR_PATH = Path.cwd().joinpath("artifacts").joinpath("traces")
@@ -47,18 +47,33 @@ def browser_context(config, browser):
     ctx.close()
 
 
-@pytest.fixture(scope="function")
-def trace_browser_context(config, browser_context):
-    ui_config = config["ui"]
-    save_trace = ui_config.getboolean("save_trace")
+@pytest.hookimpl(hookwrapper=True, tryfirst=True)
+def pytest_runtest_makereport(item, call):
+    # injecting the result to test object
+    outcome = yield
+    rep = outcome.get_result()
+    # rep_setup, rep_call, rep_teardown
+    setattr(item, f"rep_{rep.when}", rep)
 
-    if save_trace:
+
+@pytest.fixture(scope="function", autouse=True)
+def trace_browser_context(request, config, browser_context):
+    ui_config = config["ui"]
+    save_trace = ui_config.get("save_trace")
+    print("trace degeri: ", save_trace)
+    # if save_trace config is on or retain-on-failure
+    if save_trace != "off":
         browser_context.tracing.start(screenshots=True, snapshots=True, sources=True)
 
     yield
 
-    if save_trace:
-        browser_context.tracing.stop(path=TRACES_DIR_PATH.joinpath(f"trace-{uuid.uuid4()}.zip"))
+    if save_trace == "off":
+        return
+
+    failed = getattr(request.node, "rep_call", None) and request.node.rep_call.failed
+    if save_trace == "on" or (save_trace == "retain-on-failure" and failed):
+        test_name = request.node.name
+        browser_context.tracing.stop(path=TRACES_DIR_PATH.joinpath(f"trace-{test_name}-{uuid.uuid4()}.zip"))
 
 
 @pytest.fixture(scope="function")
