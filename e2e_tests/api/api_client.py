@@ -16,7 +16,6 @@ class ApiClient:
         logger.info("Logging request")
         logger.info(f"Request method: {method}, URL: {self.api_url}{endpoint}")
 
-
     def log_response(self, response: httpx.Response):
         logger.info("Logging response")
         logger.info(
@@ -27,15 +26,15 @@ class ApiClient:
         )
         logger.info(f"Response body: {response.text}")
 
-    def get(self, endpoint, params=None, headers=None):
+    def get(self, endpoint, **kwargs):
         self.log_request("GET", endpoint)
-        response = self.client.get(endpoint, params=params, headers=headers)
+        response = self.client.get(endpoint, **kwargs)
         self.log_response(response)
         return response
 
-    def post(self, endpoint, body):
+    def post(self, endpoint, body, headers=None):
         self.log_request("POST", endpoint)
-        response = self.client.post(endpoint, json=body)
+        response = self.client.post(endpoint, json=body, headers=headers)
         self.log_response(response)
         return response
 

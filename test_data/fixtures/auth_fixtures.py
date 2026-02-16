@@ -8,8 +8,7 @@ logger = logging.getLogger("fixture_logger")
 
 # returns a new featureless instance
 AUTO = object()
-REGISTER_URL = AuthEndpoints.REGISTER
-LOGIN_URL = AuthEndpoints.LOGIN
+
 
 def unique_email() -> str:
     return f"e2e_{uuid.uuid4().hex}@example.com"
@@ -46,9 +45,6 @@ def decode_token(access_token: str) -> dict:
 
 @pytest.fixture
 def make_user():
-    # to track test data
-    users = []
-
     def _make_user(
             email=AUTO,
             password=AUTO,
@@ -61,7 +57,6 @@ def make_user():
             "first_name": "Test" if first_name is AUTO else first_name,
             "last_name": "User" if last_name is AUTO else last_name,
         }
-        users.append(user)
         logger.info("Created user email=%r", user["email"])
         return user
 
@@ -71,16 +66,18 @@ def make_user():
 @pytest.fixture
 def registered_user(make_user, api_client) -> dict:
     user = make_user()
-    response = api_client.post(REGISTER_URL, body=user)
-    assert response.status_code == 201
+    response = api_client.post(AuthEndpoints.REGISTER, body=user)
+    assert response.status_code == 201, response.text
     return user
 
 
 @pytest.fixture
 def access_token(api_client, registered_user):
-    response = api_client.post(LOGIN_URL, body=registered_user)
-    assert response.status_code == 200
+    payload = {"email": registered_user["email"], "password": registered_user["password"]}
+    response = api_client.post(AuthEndpoints.LOGIN, body=payload)
+    assert response.status_code == 200, response.text
     return response.json()["access_token"]
+
 
 @pytest.fixture
 def auth_headers(access_token):

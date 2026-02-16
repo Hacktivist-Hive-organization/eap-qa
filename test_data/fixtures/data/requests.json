@@ -1,0 +1,26 @@
+{
+  "type1_request": {
+    "type": "Hardware",
+    "subtype": "Monitor",
+    "title": "Additional monitor for workstation",
+    "description": "Considering a second monitor for better multitasking.",
+    "business_justification": "Improves productivity during development and reviews.",
+    "priority": "medium"
+  },
+  "type2_request": {
+    "type": "Software & Access",
+    "subtype": "VPN access",
+    "title": "VPN access for remote work",
+    "description": "Need VPN access to work securely from home and while traveling.",
+    "business_justification": "Required for accessing internal systems outside the office.",
+    "priority": "high"
+  },
+  "type3_request": {
+    "type": "Services & Facilities",
+    "subtype": "Training/course enrollment",
+    "title": "Backend training course enrollment",
+    "description": "Request to attend an advanced backend architecture course.",
+    "business_justification": "Improves system scalability and team knowledge.",
+    "priority": "low"
+  }
+}
