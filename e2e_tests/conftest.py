@@ -60,15 +60,15 @@ def pytest_runtest_makereport(item, call):
 def trace_browser_context(request, config, browser_context):
     ui_config = config["ui"]
     save_trace = ui_config.get("save_trace")
-    print("trace degeri: ", save_trace)
     # if save_trace config is on or retain-on-failure
+    if save_trace == "off":
+        yield
+        return
+
     if save_trace != "off":
         browser_context.tracing.start(screenshots=True, snapshots=True, sources=True)
 
     yield
-
-    if save_trace == "off":
-        return
 
     failed = getattr(request.node, "rep_call", None) and request.node.rep_call.failed
     if save_trace == "on" or (save_trace == "retain-on-failure" and failed):
