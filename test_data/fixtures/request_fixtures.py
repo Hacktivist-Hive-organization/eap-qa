@@ -80,7 +80,7 @@ def create_request(api_client, auth_headers, make_request):
     def _create_request():
         payload = make_request()
         response = api_client.post(RequestsEndpoints.REQUESTS, body=payload, headers=auth_headers)
-        assert response.status_code == 200, response.text
+        assert response.status_code == 201, response.text
         data = response.json()
         return data
 
