@@ -2,7 +2,7 @@ name: e2e tests
 
 on:
   pull_request:
-    branches: [ "dev" ]
+    #branches: [ "dev" ]
   workflow_call:
   workflow_dispatch:
   #schedule:
