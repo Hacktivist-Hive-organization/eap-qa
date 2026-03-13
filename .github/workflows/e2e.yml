@@ -5,8 +5,8 @@ on:
     branches: [ "dev" ]
   workflow_call:
   workflow_dispatch:
-  #schedule:
-  #  - cron: '0 23 * * 1-5'
+  schedule:
+    - cron: '0 23 * * 1-5'
   # - cron: '0 */4 * * *'
 jobs:
   test:
@@ -69,6 +69,20 @@ jobs:
           DATABASE_NAME=${{secrets.DATABASE_NAME}}
           JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}
           DEVELOPMENT_ENVIRONMENT=True
+          EMAIL_SERVICE=dummy
+          MAIL_FROM_EMAIL=motopp.it31@gmail.com
+          MAIL_FROM_NAME=Motopp
+          MAILTRAP_USER=${{secrets.MAILTRAP_USER}}
+          MAILTRAP_SMTP_PASSWORD=${{secrets.MAILTRAP_PASSWORD}}
+          MAILTRAP_SMTP_HOST='sandbox.smtp.mailtrap.io'
+          MAILTRAP_SMTP_PORT=2525
+          MAILTRAP_USE_TLS=True
+          MAILJET_API_KEY=${{secrets.MAILJET_API_KEY}}
+          MAILJET_SECRET_KEY=${{secrets.MAILJET_SECRET_KEY}}
+          EMAIL_VERIFICATION_REQUIRED=True
+          ACCESS_TOKEN_EXPIRE_MINUTES=60
+          PASSWORD_RESET_TOKEN_EXPIRE_MINUTES=15
+          EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES=30
           EOF
 
       - name: Install backend dependencies
