@@ -83,6 +83,7 @@ jobs:
           ACCESS_TOKEN_EXPIRE_MINUTES=60
           PASSWORD_RESET_TOKEN_EXPIRE_MINUTES=15
           EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES=30
+          FRONTEND_URL=http://127.0.0.1:5173
           EOF
 
       - name: Install backend dependencies
