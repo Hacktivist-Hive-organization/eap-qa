@@ -131,10 +131,6 @@ jobs:
         run: |
           nohup npm run dev -- --host 127.0.0.1 --port 5173 --strictPort > ../frontend.log 2>&1 &
 
-      - name: Wait for servers to be ready
-        run: |
-          npx --yes wait-on http://127.0.0.1:8000/docs http://127.0.0.1:5173 --timeout 60000
-
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
