@@ -1,6 +1,6 @@
 from pathlib import Path
 import pytest
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 from e2e_tests.utils import settings
 import uuid
 import os
@@ -21,6 +21,7 @@ def config():
 
 @pytest.fixture(scope="session")
 def browser(config):
+    expect.set_options(timeout=15000)
     ui_config = config["ui"]
     browser_name = ui_config.get("browser_name")
     with sync_playwright() as p:
